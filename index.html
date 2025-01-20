@@ -1,101 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
-		<link rel="stylesheet" href="style.css" />
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-			integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-			crossorigin="anonymous"
-			referrerpolicy="no-referrer"
-		/>
-	</head>
-
-	<body>
-		<div class="container">
-			<form action="#" class="calculator">
-				<!-- <input pattern="[A-Za-z]{3}" type="text" /> -->
-				<input class="span" id="calcInput" type="text" required />
-				<div class="span"><span class="mr">DEG</span><span>F-E</span></div>
-				<!-- row -->
-				<button class="fade font-bold" data-operation="2nd">MC</button>
-				<button class="fade font-bold" data-operation="pi">MR</button>
-				<button class="font-bold" data-operation="exp">M+</button>
-				<button class="font-bold" data-operation="clear">M-</button>
-				<button class="font-bold" data-operation="back">MS</button>
-
-				<div class="span">
-					<span class="font-bold mr spacing hover" id="trigToggle">
-						<span>&#9727;</span>
-						<p>Trigonometry</p>
-						<i class="fa-solid fa-chevron-down rotate"></i>
-					</span>
-					<span class="font-bold spacing hover">
-						<span>&fnof;</span>
-						<p>Function</p>
-						<i class="fa-solid fa-chevron-down rotate"></i>
-					</span>
-				</div>
-				<div class="trig-dropdown" id="trigDropdown">
-					<button data-operation="sin">sin</button>
-					<button data-operation="cos">cos</button>
-					<button data-operation="tan">tan</button>
-					<button data-operation="asin">asin</button>
-					<button data-operation="acos">acos</button>
-					<button data-operation="atan">atan</button>
-				</div>
-				<!-- row -->
-				<button data-operation="2nd">2<sup>nd</sup></button>
-				<button data-operation="pi">&Pi;</button>
-				<button data-operation="eps">e</button>
-				<button data-operation="clear">C</button>
-				<button class="font-bold" data-operation="back">&#9003;</button>
-				<!-- row -->
-				<button data-operation="square">x<sup>2</sup></button>
-				<button data-operation="inverse"><sup>+</sup>/<sub>-</sub></button>
-				<button data-operation="abs">|x|</button>
-				<button data-operation="exp">exp</button>
-				<button data-operation="mod">mod</button>
-				<!-- row -->
-				<button data-operation="root">&#8730;x</button>
-				<button data-operation="(">(</button>
-				<button data-operation=")">)</button>
-				<button data-operation="n!">n!</button>
-				<button data-operation="/">&divide;</button>
-				<!-- row -->
-				<button data-operation="x^y">x<sup>y</sup></button>
-				<button data-numbers="4">7</button>
-				<button data-numbers="5">8</button>
-				<button data-numbers="6">9</button>
-				<button data-operation="*">&times;</button>
-				<!-- row -->
-				<button data-operation="10x">10<sup>x</sup></button>
-				<button data-numbers="4">4</button>
-				<button data-numbers="5">5</button>
-				<button data-numbers="6">6</button>
-				<button data-operation="-">-</button>
-				<!-- row -->
-				<button data-operation="log">log</button>
-				<button data-numbers="1">1</button>
-				<button data-numbers="2">2</button>
-				<button data-numbers="3">3</button>
-				<button data-operation="+">+</button>
-				<!-- row -->
-				<button data-operation="ln">ln</button>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/x-icon" href="/images/favicon.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculator</title>
+        <link rel="stylesheet" href="style.css">
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+            integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        >
+        <style>
+            .rotate-arrow {
+                transform: rotate(180deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <form action="#" class="calculator">
+                <!-- <input pattern="[A-Za-z]{3}" type="text" /> -->
+                <input
+                    class="span"
+                    id="calcInput"
+                    type="text"
+                    required
+                >
+                <div class="span">
+                    <span class="mr">DEG</span>
+                    <span>F-E</span>
+                </div>
+                
+                <div class="span">
+                    <span class="font-bold mr spacing" id="trigToggle">
+                        <span>&#9727;</span>
+                        <p>Trigonometry</p>
+                        <i class="fa-solid fa-chevron-down rotate"></i>
+                    </span>
+                </div>
+                <div class="trig-dropdown" id="trigDropdown">
+                    <button data-operation="sin">sin</button>
+                    <button data-operation="cos">cos</button>
+                    <button data-operation="tan">tan</button>
+                    <button data-operation="asin">asin</button>
+                    <button data-operation="acos">acos</button>
+                    <button data-operation="atan">atan</button>
+                </div>
+                <!-- row -->
+                <button data-operation="mod">mod</button>
+                <button data-operation="pi">&Pi;</button>
+                <button data-operation="eps">e</button>
+                <button data-operation="clear">C</button>
+                <button class="font-bold" data-operation="back">&#9003;</button>
+                <!-- row -->
+                <button data-operation="square">
+                    x
+                    <sup>2</sup>
+                </button>
+                <button data-operation="(">(</button>
+                <button data-operation=")">)</button>
+                <button data-operation="root">&#8730;x</button>
+                <button data-operation="/">&divide;</button>
+                <!-- row -->
+                <button data-operation="n!">n!</button>
+                <button data-numbers="4">7</button>
+                <button data-numbers="5">8</button>
+                <button data-numbers="6">9</button>
+                <button data-operation="*">&times;</button>
+                <!-- row -->
+                <button data-operation="10x">
+                    10
+                    <sup>x</sup>
+                </button>
+                <button data-numbers="4">4</button>
+                <button data-numbers="5">5</button>
+                <button data-numbers="6">6</button>
+                <button data-operation="-">-</button>
+                <!-- row -->
+                <button data-operation="log">log</button>
+                <button data-numbers="1">1</button>
+                <button data-numbers="2">2</button>
+                <button data-numbers="3">3</button>
+                <button data-operation="+">+</button>
+                <!-- row -->
+                <button data-operation="ln">ln</button>
 				<button data-numbers="Plus/Minus"><sup>+</sup>/<sub>-</sub></button>
-				<button data-numbers="0">0</button>
-				<button data-numbers=".">.</button>
-				<button data-operation="eval" class="bg-blue">=</button>
-			</form>
-		</div>
-		<script src="script.js"></script>
-		<script>
+                <button data-numbers="0">0</button>
+                <button data-numbers=".">.</button>
+                <button data-operation="eval" class="bg-blue">=</button>
+            </form>
+        </div>
+        <script src="script.js"></script>
+        <script>
 			document.getElementById('trigToggle').addEventListener('click', function() {
 				document.getElementById('trigDropdown').classList.toggle('show');
+				document.querySelector('#trigToggle .fa-chevron-down').classList.toggle('rotate-arrow');
 			});
-		</script>
-	</body>
+        </script>
+    </body>
 </html>
