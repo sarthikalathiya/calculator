@@ -9,7 +9,7 @@ document.querySelector('.theme-toggle').addEventListener('click', function() {
         icon.classList.add('fa-moon');
     }
 });
-
+    
 document.getElementById('trigToggle').addEventListener('click', function() {
     document.getElementById('trigDropdown').classList.toggle('show');
     document.querySelector('#trigToggle .fa-chevron-down').classList.toggle('rotate-arrow');

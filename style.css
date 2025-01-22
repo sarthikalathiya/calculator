@@ -181,6 +181,10 @@ body.dark-mode button {
     color: #fff;
 }
 
+.rotate-arrow {
+    transform: rotate(180deg);
+}
+
 body.dark-mode .history {
     background: #444;
     border-color: #555;
