@@ -21,8 +21,9 @@
     </head>
     <body>
         <div class="container">
+            <span class="theme-toggle"><i class="fa-solid fa-moon"></i></span>
+            
             <form action="#" class="calculator">
-                <!-- <input pattern="[A-Za-z]{3}" type="text" /> -->
                 <input
                     class="span"
                     id="calcInput"
@@ -94,11 +95,5 @@
             </form>
         </div>
         <script src="script.js"></script>
-        <script>
-			document.getElementById('trigToggle').addEventListener('click', function() {
-				document.getElementById('trigDropdown').classList.toggle('show');
-				document.querySelector('#trigToggle .fa-chevron-down').classList.toggle('rotate-arrow');
-			});
-        </script>
     </body>
 </html>

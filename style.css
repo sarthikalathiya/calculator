@@ -155,6 +155,37 @@ button:hover {
     grid-template-columns: repeat(5, 1fr);
 }
 
+.theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+.theme-toggle i {
+    font-size: 1.5rem; /* Increase the size of the moon icon */
+}
+
+body.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .calculator {
+    background: linear-gradient(to bottom right, #444, #555);
+}
+
+body.dark-mode input,
+body.dark-mode button {
+    background-color: #666;
+    color: #fff;
+}
+
+body.dark-mode .history {
+    background: #444;
+    border-color: #555;
+}
+
 @media (max-width: 480px) {
     .calculator {
         padding: 1rem;
