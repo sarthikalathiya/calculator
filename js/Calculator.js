@@ -89,6 +89,27 @@ Calculator.prototype.handleOperation = function(operation) {
             case 'eval':
                 this.evaluate();
                 break;
+            case 'pi':
+            case 'eps':
+                const constant = MathUtils.CONSTANTS[operation];
+                if (this.displayValue && 
+                    !MathUtils.isOperator(this.displayValue.slice(-1)) &&
+                    this.displayValue.slice(-1) !== '(') {
+                    this.displayValue += '*';
+                }
+                this.displayValue += MathUtils.formatNumber(constant);
+                break;
+            case 'root':
+                if (this.displayValue) {
+                    try {
+                        const currentVal = Function('return ' + this.displayValue)();
+                        const result = MathUtils.calculateSquareRoot(currentVal);
+                        this.displayValue = MathUtils.formatNumber(result);
+                    } catch {
+                        this.displayValue = 'Error';
+                    }
+                }
+                break;
         }
     } catch (error) {
         console.error('Operation error:', error);
