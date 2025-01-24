@@ -64,5 +64,20 @@ export const MathUtils = {
         const num = parseFloat(value);
         if (isNaN(num)) throw new Error('Invalid number');
         return num * num;
+    },
+
+    calculateModulo(a, b) {
+        const num1 = parseFloat(a);
+        const num2 = parseFloat(b);
+        if (isNaN(num1) || isNaN(num2)) throw new Error('Invalid numbers');
+        if (num2 === 0) throw new Error('Cannot divide by zero');
+        return num1 % num2;
+    },
+
+    calculatePowerOf10(exponent) {
+        const num = parseFloat(exponent);
+        if (isNaN(num)) throw new Error('Invalid exponent');
+        if (Math.abs(num) > 308) throw new Error('Exponent too large');
+        return Math.pow(10, num);
     }
 };

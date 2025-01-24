@@ -114,6 +114,23 @@ Calculator.prototype.handleOperation = function (operation) {
                 }
                 this.displayValue += 'fact(';
                 break;
+            case 'mod':
+                if (this.displayValue && 
+                    !MathUtils.isOperator(this.displayValue.slice(-1)) &&
+                    this.displayValue.slice(-1) !== '(') {
+                    this.displayValue += '%';
+                } else {
+                    return;
+                }
+                break;
+            case '10x':
+                if (this.displayValue && 
+                    !MathUtils.isOperator(this.displayValue.slice(-1)) &&
+                    this.displayValue.slice(-1) !== '(') {
+                    this.displayValue += '*';
+                }
+                this.displayValue += 'pow10(';
+                break;
             case 'eval':
                 if (!this.displayValue) return;
                 try {
@@ -123,6 +140,14 @@ Calculator.prototype.handleOperation = function (operation) {
                         .replace(/fact\(([^()]+)\)/g, (match, expr) => {
                             const result = Function('return ' + expr)();
                             return MathUtils.calculateFactorial(result);
+                        })
+                        .replace(/pow10\(([^()]+)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            return MathUtils.calculatePowerOf10(result);
+                        })
+                        .replace(/(\d+\.?\d*|\))%(\d+\.?\d*)/g, (match, a, b) => {
+                            const num1 = Function('return ' + a)();
+                            return MathUtils.calculateModulo(num1, b);
                         });
 
                     if (!MathUtils.isValidExpression(processedExpr)) {
