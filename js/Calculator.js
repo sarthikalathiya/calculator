@@ -200,13 +200,19 @@ Calculator.prototype.handleOperation = function (operation) {
                         throw new Error('Invalid expression');
                     }
                     const result = Function('return ' + processedExpr)();
+                    if (result === Infinity || result === -Infinity) {
+                        throw new Error('Division by zero');
+                    }
+                    if (Number.isNaN(result)) {
+                        throw new Error('Invalid operation');
+                    }
                     if (!Number.isFinite(result)) {
                         throw new Error('Invalid result');
                     }
                     this.displayValue = MathUtils.formatNumber(result);
                 } catch (error) {
                     console.error('Evaluation error:', error);
-                    this.displayValue = 'Error';
+                    this.displayValue = `Error: ${error.message}`;
                 }
                 break;
             case 'pi':
@@ -246,12 +252,18 @@ Calculator.prototype.evaluate = function () {
             throw new Error('Invalid expression');
         }
         const result = Function('return ' + this.displayValue)();
+        if (result === Infinity || result === -Infinity) {
+            throw new Error('Division by zero');
+        }
+        if (Number.isNaN(result)) {
+            throw new Error('Invalid operation');
+        }
         if (!Number.isFinite(result)) {
             throw new Error('Invalid result');
         }
         this.displayValue = String(result);
     } catch (error) {
         console.error('Evaluation error:', error);
-        this.displayValue = 'Error';
+        this.displayValue = `Error: ${error.message}`;
     }
 };
