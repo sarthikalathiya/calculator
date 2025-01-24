@@ -17,6 +17,10 @@ export class Calculator {
         this.handleOperation("back");
       } else if(key === "Escape") {
         this.handleOperation("clear");
+      } else if (key === "(") {
+        this.handleOperation("(");
+      } else if (key === ")") {
+        this.handleOperation(")");
       }
     });
   }
