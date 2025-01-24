@@ -15,6 +15,8 @@ export class Calculator {
         this.handleOperation(key);
       } else if (key === "Backspace") {
         this.handleOperation("back");
+      } else if(key === "Escape") {
+        this.handleOperation("clear");
       }
     });
   }
@@ -184,76 +186,11 @@ Calculator.prototype.handleOperation = function (operation) {
       case "eval":
         if (!this.displayValue) return;
         try {
-          let processedExpr = this.displayValue
-            // Add constant replacements before other operations
-            .replace(/PI/g, Math.PI)
-            .replace(/EPS/g, Math.E)
-            // Trig functions
-            .replace(/sin\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
-              const result = Function("return " + expr)();
-              const angleInRad = this.isDegreeMode
-                ? (result * Math.PI) / 180
-                : result;
-              return MathUtils.calculateTrig("sin", angleInRad);
-            })
-            .replace(/cos\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
-              const result = Function("return " + expr)();
-              const angleInRad = this.isDegreeMode
-                ? (result * Math.PI) / 180
-                : result;
-              return MathUtils.calculateTrig("cos", angleInRad);
-            })
-            .replace(/tan\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
-              const result = Function("return " + expr)();
-              const angleInRad = this.isDegreeMode
-                ? (result * Math.PI) / 180
-                : result;
-              return MathUtils.calculateTrig("tan", angleInRad);
-            })
-            .replace(/log\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
-              const result = Function("return " + expr)();
-              return Math.log10(result);
-            })
-            .replace(/ln\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
-              const result = Function("return " + expr)();
-              return Math.log(result);
-            })
-            .replace(
-              /fact\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
-              (match, expr) => {
-                const result = Function("return " + expr)();
-                return MathUtils.calculateFactorial(result);
-              }
-            )
-            .replace(
-              /pow10\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
-              (match, expr) => {
-                const result = Function("return " + expr)();
-                return MathUtils.calculatePowerOf10(result);
-              }
-            )
-            .replace(/(\d+\.?\d*|\))%(\d+\.?\d*)/g, (match, a, b) => {
-              const num1 = Function("return " + a)();
-              return MathUtils.calculateModulo(num1, b);
-            });
-
-          if (!MathUtils.isValidExpression(processedExpr)) {
-            throw new Error("Invalid expression");
-          }
-          const result = Function("return " + processedExpr)();
-          if (result === Infinity || result === -Infinity) {
-            throw new Error("Division by zero");
-          }
-          if (Number.isNaN(result)) {
-            throw new Error("Invalid operation");
-          }
-          if (!Number.isFinite(result)) {
-            throw new Error("Invalid result");
-          }
+          const result = this.evaluateExpression(this.displayValue);
           this.displayValue = MathUtils.formatNumber(result);
         } catch (error) {
           console.error("Evaluation error:", error);
-          this.displayValue = `Error`;
+          this.displayValue = "Invalid Operation";
         }
         break;
       case "pi":
@@ -282,9 +219,70 @@ Calculator.prototype.handleOperation = function (operation) {
     }
   } catch (error) {
     console.error("Operation error:", error);
-    this.displayValue = "Error";
+    this.displayValue = "Invalid Operation";
   }
   this.updateDisplay();
+};
+
+Calculator.prototype.evaluateExpression = function (expr) {
+  expr = this.processNestedOperations(expr);
+  
+  expr = expr
+    .replace(/PI/g, Math.PI.toString())
+    .replace(/EPS/g, Math.E.toString());
+
+  if (!MathUtils.isValidExpression(expr)) {
+    throw new Error("Invalid expression");
+  }
+
+  const result = Function("return " + expr)();
+  if (!Number.isFinite(result)) {
+    throw new Error("Invalid result or division by zero");
+  }
+  return result;
+};
+
+Calculator.prototype.processNestedOperations = function (expr) {
+  const patterns = {
+    trig: /(sin|cos|tan)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    log: /(log|ln)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    factorial: /fact\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    power: /pow10\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    modulo: /(\d+\.?\d*|\))%(\d+\.?\d*)/g
+  };
+
+  let prevExpr;
+  do {
+    prevExpr = expr;
+    expr = expr.replace(patterns.trig, (match, func, innerExpr) => {
+      const evalInner = this.evaluateExpression(innerExpr);
+      const angleInRad = this.isDegreeMode ? (evalInner * Math.PI) / 180 : evalInner;
+      return MathUtils.calculateTrig(func, angleInRad);
+    });
+
+    expr = expr.replace(patterns.log, (match, func, innerExpr) => {
+      const evalInner = this.evaluateExpression(innerExpr);
+      return func === 'log' ? Math.log10(evalInner) : Math.log(evalInner);
+    });
+
+    expr = expr.replace(patterns.factorial, (match, innerExpr) => {
+      const evalInner = this.evaluateExpression(innerExpr);
+      return MathUtils.calculateFactorial(evalInner);
+    });
+
+    expr = expr.replace(patterns.power, (match, innerExpr) => {
+      const evalInner = this.evaluateExpression(innerExpr);
+      return MathUtils.calculatePowerOf10(evalInner);
+    });
+
+    expr = expr.replace(patterns.modulo, (match, a, b) => {
+      const num1 = this.evaluateExpression(a);
+      const num2 = this.evaluateExpression(b);
+      return MathUtils.calculateModulo(num1, num2);
+    });
+  } while (expr !== prevExpr);
+
+  return expr;
 };
 
 Calculator.prototype.evaluate = function () {
@@ -307,6 +305,6 @@ Calculator.prototype.evaluate = function () {
     this.displayValue = String(result);
   } catch (error) {
     console.error("Evaluation error:", error);
-    this.displayValue = `Error`;
+    this.displayValue = "Invalid Operation";
   }
 };
