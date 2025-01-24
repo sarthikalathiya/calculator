@@ -4,6 +4,7 @@ export class Calculator {
     constructor(displayElement) {
         this.displayValue = '';
         this.displayElement = displayElement;
+        this.isDegreeMode = true;
         this.initializeDisplay();
     }
 
@@ -131,17 +132,52 @@ Calculator.prototype.handleOperation = function (operation) {
                 }
                 this.displayValue += 'pow10(';
                 break;
+            case 'sin':
+            case 'cos':
+            case 'tan':
+                if (this.displayValue &&
+                    !MathUtils.isOperator(this.displayValue.slice(-1)) &&
+                    this.displayValue.slice(-1) !== '(') {
+                    this.displayValue += '*';
+                }
+                this.displayValue += operation + '(';
+                break;
             case 'eval':
                 if (!this.displayValue) return;
                 try {
                     let processedExpr = this.displayValue
-                        .replace(/log\(([^()]+)\)/g, (match, expr) => `Math.log10(${expr})`)
-                        .replace(/ln\(([^()]+)\)/g, (match, expr) => `Math.log(${expr})`)
-                        .replace(/fact\(([^()]+)\)/g, (match, expr) => {
+                        // Add constant replacements before other operations
+                        .replace(/PI/g, Math.PI)
+                        .replace(/EPS/g, Math.E)
+                        // Trig functions
+                        .replace(/sin\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            const angleInRad = this.isDegreeMode ? result * Math.PI / 180 : result;
+                            return MathUtils.calculateTrig('sin', angleInRad);
+                        })
+                        .replace(/cos\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            const angleInRad = this.isDegreeMode ? result * Math.PI / 180 : result;
+                            return MathUtils.calculateTrig('cos', angleInRad);
+                        })
+                        .replace(/tan\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            const angleInRad = this.isDegreeMode ? result * Math.PI / 180 : result;
+                            return MathUtils.calculateTrig('tan', angleInRad);
+                        })
+                        .replace(/log\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            return Math.log10(result);
+                        })
+                        .replace(/ln\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            return Math.log(result);
+                        })
+                        .replace(/fact\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
                             const result = Function('return ' + expr)();
                             return MathUtils.calculateFactorial(result);
                         })
-                        .replace(/pow10\(([^()]+)\)/g, (match, expr) => {
+                        .replace(/pow10\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, expr) => {
                             const result = Function('return ' + expr)();
                             return MathUtils.calculatePowerOf10(result);
                         })
@@ -171,7 +207,7 @@ Calculator.prototype.handleOperation = function (operation) {
                     this.displayValue.slice(-1) !== '(') {
                     this.displayValue += '*';
                 }
-                this.displayValue += MathUtils.formatNumber(constant);
+                this.displayValue += operation.toUpperCase();
                 break;
             case 'root':
                 if (this.displayValue) {

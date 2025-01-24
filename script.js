@@ -19,6 +19,13 @@ document.getElementById('trigToggle').addEventListener('click', function() {
 
 const calculator = new Calculator(document.getElementById('calcInput'));
 
+const angleModeElement = document.getElementById('angleMode');
+// console.log(angleModeElement.innerText);
+angleModeElement.addEventListener('click', function() {
+    calculator.isDegreeMode = !calculator.isDegreeMode;
+    this.textContent = calculator.isDegreeMode ? 'DEG' : 'RAD';
+});
+
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', (e) => {
         e.preventDefault();

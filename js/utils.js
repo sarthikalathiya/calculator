@@ -79,5 +79,29 @@ export const MathUtils = {
         if (isNaN(num)) throw new Error('Invalid exponent');
         if (Math.abs(num) > 308) throw new Error('Exponent too large');
         return Math.pow(10, num);
+    },
+
+    calculateTrig(operation, value) {
+        const num = parseFloat(value);
+        if (isNaN(num)) throw new Error('Invalid number');
+        
+        try {
+            switch(operation) {
+                case 'sin':
+                    return Math.sin(num);
+                case 'cos':
+                    return Math.cos(num);
+                case 'tan':
+                    if (Math.abs(Math.cos(num)) < 1e-10) {
+                        throw new Error('Undefined (tan 90°)');
+                    }
+                    return Math.tan(num);
+                default:
+                    throw new Error('Invalid operation');
+            }
+        } catch (error) {
+            console.error(`Trig error (${operation}):`, error);
+            throw error;
+        }
     }
 };
