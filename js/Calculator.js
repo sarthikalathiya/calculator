@@ -51,6 +51,16 @@ Calculator.prototype.appendNumber = function (number) {
         this.toggleSign();
         return;
     }
+    
+    if (number === '.') {
+        const numbers = this.displayValue.split(/[\+\-\*\/\(\)]/);
+        const lastNumber = numbers[numbers.length - 1];
+        
+        if (lastNumber && lastNumber.includes('.')) {
+            return;
+        }
+    }
+    
     this.displayValue += number;
     this.updateDisplay();
 };
