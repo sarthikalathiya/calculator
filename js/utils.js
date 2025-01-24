@@ -33,5 +33,36 @@ export const MathUtils = {
         if (isNaN(num)) throw new Error('Invalid number');
         if (num < 0) throw new Error('Cannot calculate square root of negative number');
         return Math.sqrt(num);
+    },
+
+    calculateLog(value, isNatural = false) {
+        const num = parseFloat(value);
+        if (isNaN(num)) throw new Error('Invalid number');
+        if (num <= 0) throw new Error('Cannot calculate logarithm of zero or negative number');
+        return isNatural ? Math.log(num) : Math.log10(num);
+    },
+
+    wrapInParentheses(value) {
+        return value < 0 ? `(${value})` : value;
+    },
+
+    calculateFactorial(n) {
+        const num = parseInt(n);
+        if (isNaN(num)) throw new Error('Invalid number');
+        if (num < 0) throw new Error('Cannot calculate factorial of negative number');
+        if (num > 100) throw new Error('Number too large for factorial');
+        if (num === 0) return 1;
+        
+        let result = 1;
+        for(let i = 2; i <= num; i++) {
+            result *= i;
+        }
+        return result;
+    },
+
+    calculateSquare(value) {
+        const num = parseFloat(value);
+        if (isNaN(num)) throw new Error('Invalid number');
+        return num * num;
     }
 };

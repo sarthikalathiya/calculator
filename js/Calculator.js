@@ -12,7 +12,7 @@ export class Calculator {
     }
 }
 
-Calculator.prototype.updateDisplay = function () {
+Calculator.prototype.updateDisplay = function() {
     if (this.displayElement) {
         this.displayElement.value = this.displayValue;
     }
@@ -95,12 +95,35 @@ Calculator.prototype.handleOperation = function (operation) {
                 }
                 this.displayValue += operation + '(';
                 break;
+            case 'square':
+                if (this.displayValue) {
+                    const lastNumber = this.displayValue.split(/[\+\-\*\/\(\)]/).pop();
+                    if (lastNumber) {
+                        const lastNumberIndex = this.displayValue.lastIndexOf(lastNumber);
+                        const before = this.displayValue.slice(0, lastNumberIndex);
+                        const squared = `(${lastNumber}*${lastNumber})`;
+                        this.displayValue = before + squared;
+                    }
+                }
+                break;
+            case 'n!':
+                if (this.displayValue && 
+                    !MathUtils.isOperator(this.displayValue.slice(-1)) &&
+                    this.displayValue.slice(-1) !== '(') {
+                    this.displayValue += '*';
+                }
+                this.displayValue += 'fact(';
+                break;
             case 'eval':
                 if (!this.displayValue) return;
                 try {
                     let processedExpr = this.displayValue
                         .replace(/log\(([^()]+)\)/g, (match, expr) => `Math.log10(${expr})`)
-                        .replace(/ln\(([^()]+)\)/g, (match, expr) => `Math.log(${expr})`);
+                        .replace(/ln\(([^()]+)\)/g, (match, expr) => `Math.log(${expr})`)
+                        .replace(/fact\(([^()]+)\)/g, (match, expr) => {
+                            const result = Function('return ' + expr)();
+                            return MathUtils.calculateFactorial(result);
+                        });
 
                     if (!MathUtils.isValidExpression(processedExpr)) {
                         throw new Error('Invalid expression');
