@@ -16,6 +16,7 @@ export class Calculator {
 Calculator.prototype.updateDisplay = function() {
     if (this.displayElement) {
         this.displayElement.value = this.displayValue;
+        this.displayElement.scrollLeft = this.displayElement.scrollWidth;
     }
 };
 
