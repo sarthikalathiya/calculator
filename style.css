@@ -1,3 +1,4 @@
+/* Reset and Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -15,16 +16,12 @@ body {
   font-size: 0.9rem;
 }
 
+/* Input Styles */
 input {
   background: none;
   border: none;
   outline: none;
   letter-spacing: 0.1rem;
-  /* border: 1px solid red; */
-}
-
-input {
-  /* grid-column: span 5; */
   padding: 0 0.5rem 2rem 0.5rem;
   text-align: end;
   font-size: 2rem;
@@ -37,17 +34,13 @@ input {
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* span:not(:last-child) {
-    margin-right: 3rem;
-} */
-
+/* Utility Classes */
 .mr {
   margin-right: 3rem;
 }
 
-.spacing > *:not(:last-child) {
+.spacing>*:not(:last-child) {
   display: inline;
-  /* border: 1px solid red; */
 }
 
 .rotate {
@@ -58,17 +51,27 @@ input {
   transform: rotate(-180deg);
 }
 
-span {
-  font-weight: 600;
-  cursor: pointer;
+.span {
+  grid-column: span 5;
+  margin: 1rem 0;
 }
 
+.fade {
+  color: hsl(50, 0%, 70%);
+}
+
+.font-bold {
+  font-weight: 600;
+}
+
+.rotate-arrow {
+  transform: rotate(180deg);
+}
+
+/* Button Styles */
 button {
   background: none;
   border: none;
-}
-
-button {
   padding: 0.5rem 1rem;
   background-color: #f7f7f7;
   border-radius: 3px;
@@ -80,6 +83,15 @@ button {
   font-size: 1.1rem;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  outline: none;
+}
+
+button:focus {
+  outline: none;
 }
 
 button[data-numbers] {
@@ -95,6 +107,13 @@ button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.bg-blue {
+  background-color: #91c2e5;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+/* Calculator Layout */
 .calculator {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -114,29 +133,10 @@ button:hover {
   gap: 0.5rem;
 }
 
-.span {
-  grid-column: span 5;
-  margin: 1rem 0;
-}
-
-.fade {
-  color: hsl(50, 0%, 70%);
-}
-
-.font-bold {
-  font-weight: 600;
-}
-
-.bg-blue {
-  background-color: #91c2e5;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-}
-
+/* Trigonometry Dropdown */
 .trig-dropdown {
   display: none;
   grid-column: span 5;
-  background-color: #f9f9f9;
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -154,6 +154,7 @@ button:hover {
   grid-template-columns: repeat(5, 1fr);
 }
 
+/* Theme Toggle and Dark Mode */
 .theme-toggle {
   position: absolute;
   top: 1rem;
@@ -162,9 +163,10 @@ button:hover {
 }
 
 .theme-toggle i {
-  font-size: 1.5rem; /* Increase the size of the moon icon */
+  font-size: 1.5rem;
 }
 
+/* Dark Mode Styles */
 body.dark-mode {
   background-color: #333;
   color: #fff;
@@ -180,13 +182,207 @@ body.dark-mode button {
   color: #fff;
 }
 
-.rotate-arrow {
-  transform: rotate(180deg);
+body.dark-mode .trig-dropdown {
+  background-color: #444;
+  border-color: #555;
+  color: #fff;
+}
+
+body.dark-mode .trig-dropdown button {
+  background-color: #666;
+  color: #fff;
+}
+
+body.dark-mode .trig-dropdown button:hover {
+  background-color: #777;
 }
 
 body.dark-mode .history {
   background: #444;
   border-color: #555;
+}
+
+/* History Panel */
+.container {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+}
+
+.history-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.history-panel {
+  width: 300px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  display: none;
+  max-height: 600px;
+}
+
+.history-panel.show {
+  display: block;
+}
+
+.history-panel h3 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.history-list {
+  overflow-y: auto;
+  max-height: calc(100% - 80px);
+}
+
+.history-item {
+  padding: 0.8rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.history-item:hover {
+  background: #f8f9fa;
+}
+
+.history-expression {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.history-result {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+
+.clear-history {
+  width: 100%;
+  margin-top: 1rem;
+  background: #f1f3f4;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clear-history:hover {
+  background: #e8eaed;
+}
+
+body.dark-mode .history-panel {
+  background: #333;
+  color: #fff;
+}
+
+body.dark-mode .history-panel h3 {
+  color: #fff;
+}
+
+body.dark-mode .history-item {
+  border-bottom-color: #444;
+}
+
+body.dark-mode .history-item:hover {
+  background: #444;
+}
+
+body.dark-mode .history-expression {
+  color: #aaa;
+}
+
+body.dark-mode .history-result {
+  color: #fff;
+}
+
+body.dark-mode .clear-history {
+  background: #444;
+  color: #fff;
+}
+
+body.dark-mode .clear-history:hover {
+  background: #555;
+}
+
+/* Custom Scrollbar Styles */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Dark mode scrollbar */
+body.dark-mode .history-list::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+body.dark-mode .history-list::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Horizontal scrollbar styles */
+.history-list::-webkit-scrollbar:horizontal {
+  height: 6px;
+  /* Same as vertical scrollbar width */
+}
+
+.history-list::-webkit-scrollbar-track:horizontal {
+  background: transparent;
+}
+
+.history-list::-webkit-scrollbar-thumb:horizontal {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:horizontal:hover {
+  background: #999;
+}
+
+/* Dark mode horizontal scrollbar */
+body.dark-mode .history-list::-webkit-scrollbar-thumb:horizontal {
+  background: #666;
+}
+
+body.dark-mode .history-list::-webkit-scrollbar-thumb:horizontal:hover {
+  background: #777;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .history-panel {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 480px) {

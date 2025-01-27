@@ -44,10 +44,6 @@ export const MathUtils = {
     return isNatural ? Math.log(num) : Math.log10(num);
   },
 
-  wrapInParentheses(value) {
-    return value < 0 ? `(${value})` : value;
-  },
-
   calculateFactorial(n) {
     const num = parseInt(n);
     if (isNaN(num)) throw new Error("Invalid number");
@@ -106,27 +102,5 @@ export const MathUtils = {
       console.error(`Trig error (${operation}):`, error);
       throw error;
     }
-  },
-
-  isNestedOperation(expr) {
-    const operationPattern = /(sin|cos|tan|log|ln|fact|pow10)\(/;
-    return operationPattern.test(expr);
-  },
-
-  validateNestedOperation(expr) {
-    const maxNestingLevel = 20; // Prevent stack overflow
-    let level = 0;
-    let count = 0;
-    
-    for (let char of expr) {
-      if (char === '(') {
-        level++;
-        if (level > maxNestingLevel) return false;
-      }
-      if (char === ')') level--;
-      count++;
-      if (count > 1000) return false; // Prevent too long expressions
-    }
-    return level === 0;
   },
 };

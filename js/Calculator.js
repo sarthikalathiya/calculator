@@ -5,7 +5,10 @@ export class Calculator {
     this.displayValue = "";
     this.displayElement = displayElement;
     this.isDegreeMode = true;
+    this.history = JSON.parse(localStorage.getItem('calculatorHistory')) || [];
     this.initializeDisplay();
+    this.initializeHistory();
+
 
     document.addEventListener("keydown", (e) => {
       const key = e.key;
@@ -15,18 +18,63 @@ export class Calculator {
         this.handleOperation(key);
       } else if (key === "Backspace") {
         this.handleOperation("back");
-      } else if(key === "Escape") {
+      } else if (key === "Escape") {
         this.handleOperation("clear");
       } else if (key === "(") {
         this.handleOperation("(");
       } else if (key === ")") {
         this.handleOperation(")");
+      } else if (key === "Enter") {
+        this.handleOperation("eval");
       }
     });
   }
 
   initializeDisplay() {
     this.updateDisplay();
+  }
+
+  initializeHistory() {
+    const historyList = document.querySelector('.history-list');
+    this.renderHistory(historyList);
+  }
+
+  addToHistory(expression, result) {
+    this.history.unshift({ expression, result, timestamp: Date.now() });
+    if (this.history.length > 100) this.history.pop(); // Keep last 100 entries
+    localStorage.setItem('calculatorHistory', JSON.stringify(this.history));
+
+    const historyPanel = document.querySelector('.history-panel');
+    if (historyPanel.classList.contains('show')) {
+      this.renderHistory(document.querySelector('.history-list'));
+    }
+  }
+
+  renderHistory(historyList) {
+    if (!historyList) return;
+
+    const clearButton = document.querySelector('.clear-history');
+    if (this.history.length === 0) {
+      historyList.innerHTML = '<div class="history-item no-history">No history available</div>';
+      clearButton.style.display = 'none'; // Hide clear button
+      return;
+    }
+
+    clearButton.style.display = 'block'; // Show clear button
+    historyList.innerHTML = this.history
+      .map(item => `
+        <div class="history-item" data-expression="${item.expression}">
+          <div class="history-expression">${item.expression}</div>
+          <div class="history-result">${item.result}</div>
+        </div>
+      `)
+      .join('');
+  }
+
+  clearHistory() {
+    this.history = [];
+    localStorage.removeItem('calculatorHistory');
+    this.renderHistory(document.querySelector('.history-list'));
   }
 }
 
@@ -68,7 +116,6 @@ Calculator.prototype.toggleSign = function () {
 };
 
 Calculator.prototype.appendNumber = function (number) {
-  if (number === "." && this.displayValue.includes(".")) return;
   if (number === "Plus/Minus") {
     this.toggleSign();
     return;
@@ -116,10 +163,10 @@ Calculator.prototype.handleOperation = function (operation) {
       case "-":
       case "*":
       case "/":
-        if(!this.displayValue) return;
+        if (!this.displayValue) return;
         if (MathUtils.isOperator(this.displayValue.slice(-1))) {
           this.displayValue = this.displayValue.slice(0, -1);
-        } 
+        }
         this.displayValue += operation;
         break;
       case "log":
@@ -145,14 +192,17 @@ Calculator.prototype.handleOperation = function (operation) {
         }
         break;
       case "n!":
-        if (
-          this.displayValue &&
-          !MathUtils.isOperator(this.displayValue.slice(-1)) &&
-          this.displayValue.slice(-1) !== "("
-        ) {
-          this.displayValue += "*";
+        if (this.displayValue) {
+          // Match the last number or expression in parentheses
+          const match = this.displayValue.match(/(\d+|\([^()]+\))$/);
+          if (match) {
+            const lastNumberOrExpr = match[0];
+            const lastIndex = this.displayValue.lastIndexOf(lastNumberOrExpr);
+            this.displayValue =
+              this.displayValue.slice(0, lastIndex + lastNumberOrExpr.length) +
+              "!";
+          }
         }
-        this.displayValue += "fact(";
         break;
       case "mod":
         if (
@@ -210,15 +260,14 @@ Calculator.prototype.handleOperation = function (operation) {
         this.displayValue += operation.toUpperCase();
         break;
       case "root":
-        if (this.displayValue) {
-          try {
-            const currentVal = Function("return " + this.displayValue)();
-            const result = MathUtils.calculateSquareRoot(currentVal);
-            this.displayValue = MathUtils.formatNumber(result);
-          } catch {
-            this.displayValue = "Error";
-          }
+        if (
+          this.displayValue &&
+          !MathUtils.isOperator(this.displayValue.slice(-1)) &&
+          this.displayValue.slice(-1) !== "("
+        ) {
+          this.displayValue += "*";
         }
+        this.displayValue += "sqrt(";
         break;
     }
   } catch (error) {
@@ -230,7 +279,7 @@ Calculator.prototype.handleOperation = function (operation) {
 
 Calculator.prototype.evaluateExpression = function (expr) {
   expr = this.processNestedOperations(expr);
-  
+
   expr = expr
     .replace(/PI/g, Math.PI.toString())
     .replace(/EPS/g, Math.E.toString());
@@ -243,6 +292,7 @@ Calculator.prototype.evaluateExpression = function (expr) {
   if (!Number.isFinite(result)) {
     throw new Error("Invalid result or division by zero");
   }
+  this.addToHistory(expr, MathUtils.formatNumber(result));
   return result;
 };
 
@@ -250,9 +300,10 @@ Calculator.prototype.processNestedOperations = function (expr) {
   const patterns = {
     trig: /(sin|cos|tan)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
     log: /(log|ln)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
-    factorial: /fact\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    factorial: /(\d+|\([^()]+\))!/g,  // Updated to match numbers or expressions in parentheses
     power: /pow10\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
-    modulo: /(\d+\.?\d*|\))%(\d+\.?\d*)/g
+    modulo: /(\d+\.?\d*|\))%(\d+\.?\d*)/g,
+    sqrt: /sqrt\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
   };
 
   let prevExpr;
@@ -269,9 +320,12 @@ Calculator.prototype.processNestedOperations = function (expr) {
       return func === 'log' ? Math.log10(evalInner) : Math.log(evalInner);
     });
 
-    expr = expr.replace(patterns.factorial, (match, innerExpr) => {
-      const evalInner = this.evaluateExpression(innerExpr);
-      return MathUtils.calculateFactorial(evalInner);
+    expr = expr.replace(patterns.factorial, (match, number) => {
+      // If it's a parenthesized expression, evaluate it first
+      if (number.startsWith('(')) {
+        number = this.evaluateExpression(number.slice(1, -1));
+      }
+      return MathUtils.calculateFactorial(number);
     });
 
     expr = expr.replace(patterns.power, (match, innerExpr) => {
@@ -283,6 +337,11 @@ Calculator.prototype.processNestedOperations = function (expr) {
       const num1 = this.evaluateExpression(a);
       const num2 = this.evaluateExpression(b);
       return MathUtils.calculateModulo(num1, num2);
+    });
+
+    expr = expr.replace(patterns.sqrt, (match, innerExpr) => {
+      const evalInner = this.evaluateExpression(innerExpr);
+      return MathUtils.calculateSquareRoot(evalInner);
     });
   } while (expr !== prevExpr);
 
