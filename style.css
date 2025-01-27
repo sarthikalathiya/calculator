@@ -70,24 +70,15 @@ input {
 
 /* Button Styles */
 button {
-  background: none;
+  background: #ffffff;
   border: none;
   padding: 0.5rem 1rem;
-  background-color: #f7f7f7;
-  border-radius: 3px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: background-color 0.3s ease;
-  min-height: 45px;
   border-radius: 8px;
   font-size: 1.1rem;
+  font-weight: 500;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  outline: none;
+  color: #333;
 }
 
 button:focus {
@@ -95,16 +86,29 @@ button:focus {
 }
 
 button[data-numbers] {
-  background: #fcfcfc;
+  background: #ffffff;
   font-size: 1.3rem;
   font-weight: 500;
-  cursor: pointer;
+}
+
+button[data-operation="back"] {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+button[data-operation]:not([data-operation="back"]):not([data-operation="eval"]) {
+  background: #f0f0f0;
+  color: #2c3e50;
 }
 
 button:hover {
-  background-color: #e0e0e0;
+  background-color: #e8e8e8;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+button[data-operation="back"]:hover {
+  background-color: rgba(255, 68, 68, 0.1);
 }
 
 .bg-blue {
@@ -182,6 +186,32 @@ body.dark-mode button {
   color: #fff;
 }
 
+body.dark-mode button {
+  background: #555;
+  color: #fff;
+}
+
+body.dark-mode button[data-numbers] {
+  background: #666;
+}
+
+body.dark-mode button[data-operation]:not([data-operation="back"]):not([data-operation="eval"]) {
+  background: #444;
+  color: #fff;
+}
+
+body.dark-mode button:hover {
+  background-color: #777;
+}
+
+body.dark-mode button[data-operation="back"] {
+  color: #ff6666; /* Slightly lighter red for dark mode */
+}
+
+body.dark-mode button[data-operation="back"]:hover {
+  background-color: rgba(255, 102, 102, 0.2);
+}
+
 body.dark-mode .trig-dropdown {
   background-color: #444;
   border-color: #555;
@@ -200,6 +230,50 @@ body.dark-mode .trig-dropdown button:hover {
 body.dark-mode .history {
   background: #444;
   border-color: #555;
+}
+
+/* Dark Mode Button Styles */
+body.dark-mode button {
+  background: #444;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode button[data-numbers] {
+  background: #555;
+  color: #fff;
+}
+
+body.dark-mode button[data-operation]:not([data-operation="back"]):not([data-operation="eval"]) {
+  background: #333;
+  color: #fff;
+}
+
+body.dark-mode button:hover {
+  background-color: #666;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode button[data-numbers]:hover {
+  background-color: #777;
+}
+
+body.dark-mode button[data-operation="back"] {
+  background-color: #cc0000;
+  color: white;
+}
+
+body.dark-mode button[data-operation="back"]:hover {
+  background-color: #ff0000;
+}
+
+body.dark-mode .bg-blue {
+  background: linear-gradient(135deg, #0056b3, #003166);
+  color: white;
+}
+
+body.dark-mode .bg-blue:hover {
+  background: linear-gradient(135deg, #0069d9, #004080);
 }
 
 /* History Panel */
