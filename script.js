@@ -1,15 +1,28 @@
 import { Calculator } from "./js/Calculator.js";
 
-document.querySelector(".theme-toggle").addEventListener("click", function () {
-  document.body.classList.toggle("dark-mode");
+function setTheme(isDarkMode) {
   const icon = document.querySelector(".theme-toggle i");
-  if (document.body.classList.contains("dark-mode")) {
+  if (isDarkMode) {
+    document.body.classList.add("dark-mode");
     icon.classList.remove("fa-moon");
     icon.classList.add("fa-sun");
   } else {
+    document.body.classList.remove("dark-mode");
     icon.classList.remove("fa-sun");
     icon.classList.add("fa-moon");
   }
+  localStorage.setItem("isDarkMode", isDarkMode);
+}
+
+// Initialize theme from localStorage
+const savedTheme = localStorage.getItem("isDarkMode");
+if (savedTheme !== null) {
+  setTheme(savedTheme === "true");
+}
+
+document.querySelector(".theme-toggle").addEventListener("click", function () {
+  const isDarkMode = !document.body.classList.contains("dark-mode");
+  setTheme(isDarkMode);
 });
 
 document.getElementById("trigToggle").addEventListener("click", function () {
