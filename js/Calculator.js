@@ -126,6 +126,11 @@ Calculator.prototype.appendNumber = function (number) {
     return;
   }
 
+  // Check for constants
+  if (this.displayValue.endsWith('PI') || this.displayValue.endsWith('EPS')) {
+    return; // Prevent adding numbers directly after constants
+  }
+
   if (number === ".") {
     const numbers = this.displayValue.split(/[\+\-\×\/\(\)]/);
     const lastNumber = numbers[numbers.length - 1];
@@ -301,12 +306,12 @@ Calculator.prototype.evaluateExpression = function (expr) {
 
 Calculator.prototype.processNestedOperations = function (expr) {
   const patterns = {
-    trig: /(sin|cos|tan)\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
-    log: /(log|ln)\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
+    trig: /(sin|cos|tan)\(([^()]+)\)/g,
+    log: /(log|ln)\(([^()]+)\)/g,
     factorial: /(\d+|\([^()]+\))!/g,
-    power: /pow10\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
-    modulo: /(\d+\.?\d×|\))%(\d+\.?\d×)/g,
-    sqrt: /sqrt\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
+    power: /pow10\(([^()]+)\)/g,
+    modulo: /(\d+\.?\d*|\))%(\d+\.?\d*)/g,
+    sqrt: /sqrt\(([^()]+)\)/g,  // Fixed pattern for sqrt
   };
 
   let prevExpr;
@@ -343,8 +348,8 @@ Calculator.prototype.processNestedOperations = function (expr) {
     });
 
     expr = expr.replace(patterns.sqrt, (match, innerExpr) => {
-      const evalInner = this.evaluateExpression(innerExpr);
-      return MathUtils.calculateSquareRoot(evalInner);
+      const evalInner = Function('return ' + innerExpr)();  // Evaluate the inner expression
+      return Math.sqrt(evalInner);
     });
   } while (expr !== prevExpr);
 
