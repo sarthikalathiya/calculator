@@ -183,15 +183,9 @@ Calculator.prototype.handleOperation = function (operation) {
         }
         this.displayValue += operation + "(";
         break;
-      case "square":
-        if (this.displayValue) {
-          const lastNumber = this.displayValue.split(/[\+\-\*\/\(\)]/).pop();
-          if (lastNumber) {
-            const lastNumberIndex = this.displayValue.lastIndexOf(lastNumber);
-            const before = this.displayValue.slice(0, lastNumberIndex);
-            const squared = `(${lastNumber}*${lastNumber})`;
-            this.displayValue = before + squared;
-          }
+      case "x^y":
+        if (this.displayValue && !MathUtils.isOperator(this.displayValue.slice(-1)) && this.displayValue.slice(-1) !== "(") {
+          this.displayValue += "^(";
         }
         break;
       case "n!":
@@ -286,7 +280,8 @@ Calculator.prototype.evaluateExpression = function (expr) {
 
   expr = expr
     .replace(/PI/g, Math.PI.toString())
-    .replace(/EPS/g, Math.E.toString());
+    .replace(/EPS/g, Math.E.toString())
+    .replace(/\^/g, "**");
 
   if (!MathUtils.isValidExpression(expr)) {
     throw new Error("Invalid expression");
