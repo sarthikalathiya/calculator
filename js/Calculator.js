@@ -17,8 +17,10 @@ export class Calculator {
       }
       if (/^[0-9.]$/.test(key)) {
         this.appendNumber(key);
-      } else if (["+", "-", "*", "/"].includes(key)) {
+      } else if (["+", "-", "/"].includes(key)) {
         this.handleOperation(key);
+      } else if (key === "*") { // Fix this condition
+        this.handleOperation("×");
       } else if (key === "Backspace") {
         this.handleOperation("back");
       } else if (key === "Escape") {
@@ -91,7 +93,7 @@ Calculator.prototype.updateDisplay = function () {
 Calculator.prototype.toggleSign = function () {
   if (!this.displayValue) return;
 
-  const lastNumber = this.displayValue.split(/[\+\-\*\/\(\)]/).pop();
+  const lastNumber = this.displayValue.split(/[\+\-\×\/\(\)]/).pop();
   if (!lastNumber) return;
 
   const lastNumberIndex = this.displayValue.lastIndexOf(lastNumber);
@@ -125,7 +127,7 @@ Calculator.prototype.appendNumber = function (number) {
   }
 
   if (number === ".") {
-    const numbers = this.displayValue.split(/[\+\-\*\/\(\)]/);
+    const numbers = this.displayValue.split(/[\+\-\×\/\(\)]/);
     const lastNumber = numbers[numbers.length - 1];
 
     if (lastNumber && lastNumber.includes(".")) {
@@ -152,7 +154,7 @@ Calculator.prototype.handleOperation = function (operation) {
           !MathUtils.isOperator(this.displayValue.slice(-1)) &&
           this.displayValue.slice(-1) !== "("
         ) {
-          this.displayValue += "*";
+          this.displayValue += "×";
         }
         this.displayValue += "(";
         break;
@@ -162,9 +164,9 @@ Calculator.prototype.handleOperation = function (operation) {
           this.displayValue += ")";
         }
         break;
+      case "×":
       case "+":
       case "-":
-      case "*":
       case "/":
         if (!this.displayValue) return;
         if (MathUtils.isOperator(this.displayValue.slice(-1))) {
@@ -179,7 +181,7 @@ Calculator.prototype.handleOperation = function (operation) {
           !MathUtils.isOperator(this.displayValue.slice(-1)) &&
           this.displayValue.slice(-1) !== "("
         ) {
-          this.displayValue += "*";
+          this.displayValue += "×";
         }
         this.displayValue += operation + "(";
         break;
@@ -218,7 +220,7 @@ Calculator.prototype.handleOperation = function (operation) {
           !MathUtils.isOperator(this.displayValue.slice(-1)) &&
           this.displayValue.slice(-1) !== "("
         ) {
-          this.displayValue += "*";
+          this.displayValue += "×";
         }
         this.displayValue += "pow10(";
         break;
@@ -230,7 +232,7 @@ Calculator.prototype.handleOperation = function (operation) {
           !MathUtils.isOperator(this.displayValue.slice(-1)) &&
           this.displayValue.slice(-1) !== "("
         ) {
-          this.displayValue += "*";
+          this.displayValue += "×";
         }
         this.displayValue += operation + "(";
         break;
@@ -252,7 +254,7 @@ Calculator.prototype.handleOperation = function (operation) {
           !MathUtils.isOperator(this.displayValue.slice(-1)) &&
           this.displayValue.slice(-1) !== "("
         ) {
-          this.displayValue += "*";
+          this.displayValue += "×";
         }
         this.displayValue += operation.toUpperCase();
         break;
@@ -262,7 +264,7 @@ Calculator.prototype.handleOperation = function (operation) {
           !MathUtils.isOperator(this.displayValue.slice(-1)) &&
           this.displayValue.slice(-1) !== "("
         ) {
-          this.displayValue += "*";
+          this.displayValue += "×";
         }
         this.displayValue += "sqrt(";
         break;
@@ -276,6 +278,9 @@ Calculator.prototype.handleOperation = function (operation) {
 
 Calculator.prototype.evaluateExpression = function (expr) {
   const originalExpr = expr; // Store the original expression
+  // Add this line to replace × with × before processing
+  expr = expr.replace(/×/g, '*');
+  
   expr = this.processNestedOperations(expr);
 
   expr = expr
@@ -297,12 +302,12 @@ Calculator.prototype.evaluateExpression = function (expr) {
 
 Calculator.prototype.processNestedOperations = function (expr) {
   const patterns = {
-    trig: /(sin|cos|tan)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
-    log: /(log|ln)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    trig: /(sin|cos|tan)\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
+    log: /(log|ln)\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
     factorial: /(\d+|\([^()]+\))!/g,  // Updated to match numbers or expressions in parentheses
-    power: /pow10\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
-    modulo: /(\d+\.?\d*|\))%(\d+\.?\d*)/g,
-    sqrt: /sqrt\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g,
+    power: /pow10\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
+    modulo: /(\d+\.?\d×|\))%(\d+\.?\d×)/g,
+    sqrt: /sqrt\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
   };
 
   let prevExpr;
@@ -369,4 +374,10 @@ Calculator.prototype.evaluate = function () {
     console.error("Evaluation error:", error);
     this.displayValue = "Invalid Operation";
   }
+};
+
+Calculator.prototype.compute = function () {
+  // Replace × with * for evaluation
+  const expression = this.displayValue.replace(/×/g, '*');
+  // ...rest of compute logic...
 };

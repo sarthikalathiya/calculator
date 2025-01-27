@@ -10,7 +10,7 @@ export const MathUtils = {
   },
 
   isOperator(char) {
-    return "+-*/".includes(char);
+    return "+-×/".includes(char);
   },
 
   countParentheses(expr) {
@@ -25,7 +25,7 @@ export const MathUtils = {
   },
 
   formatNumber(num) {
-    return Number.isInteger(num) ? num.toString() : num.toPrecision(6);
+    return Number.isInteger(num) ? num.toString() : num.toPrecision(3);
   },
 
   calculateSquareRoot(value) {
