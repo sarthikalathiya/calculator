@@ -12,6 +12,9 @@ export class Calculator {
 
     document.addEventListener("keydown", (e) => {
       const key = e.key;
+      if (document.activeElement === this.displayElement && key === "Enter") {
+        e.preventDefault(); // Prevent default action when Enter is pressed on the display element
+      }
       if (/^[0-9.]$/.test(key)) {
         this.appendNumber(key);
       } else if (["+", "-", "*", "/"].includes(key)) {
@@ -24,7 +27,7 @@ export class Calculator {
         this.handleOperation("(");
       } else if (key === ")") {
         this.handleOperation(")");
-      } else if (key === "Enter") {
+      } else if (key === "Enter" || key === "=") {
         this.handleOperation("eval");
       }
     });
@@ -278,6 +281,7 @@ Calculator.prototype.handleOperation = function (operation) {
 };
 
 Calculator.prototype.evaluateExpression = function (expr) {
+  const originalExpr = expr; // Store the original expression
   expr = this.processNestedOperations(expr);
 
   expr = expr
@@ -292,7 +296,7 @@ Calculator.prototype.evaluateExpression = function (expr) {
   if (!Number.isFinite(result)) {
     throw new Error("Invalid result or division by zero");
   }
-  this.addToHistory(expr, MathUtils.formatNumber(result));
+  this.addToHistory(originalExpr, MathUtils.formatNumber(result)); // Use the original expression
   return result;
 };
 
