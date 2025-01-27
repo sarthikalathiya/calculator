@@ -13,13 +13,13 @@ export class Calculator {
     document.addEventListener("keydown", (e) => {
       const key = e.key;
       if (document.activeElement === this.displayElement && key === "Enter") {
-        e.preventDefault(); // Prevent default action when Enter is pressed on the display element
+        e.preventDefault();
       }
       if (/^[0-9.]$/.test(key)) {
         this.appendNumber(key);
       } else if (["+", "-", "/"].includes(key)) {
         this.handleOperation(key);
-      } else if (key === "*") { // Fix this condition
+      } else if (key === "*") {
         this.handleOperation("×");
       } else if (key === "Backspace") {
         this.handleOperation("back");
@@ -46,7 +46,7 @@ export class Calculator {
 
   addToHistory(expression, result) {
     this.history.unshift({ expression, result, timestamp: Date.now() });
-    if (this.history.length > 100) this.history.pop(); // Keep last 100 entries
+    if (this.history.length > 1024) this.history.pop();
     localStorage.setItem('calculatorHistory', JSON.stringify(this.history));
 
     const historyPanel = document.querySelector('.history-panel');
@@ -192,7 +192,6 @@ Calculator.prototype.handleOperation = function (operation) {
         break;
       case "n!":
         if (this.displayValue) {
-          // Match the last number or expression in parentheses
           const match = this.displayValue.match(/(\d+|\([^()]+\))$/);
           if (match) {
             const lastNumberOrExpr = match[0];
@@ -277,10 +276,10 @@ Calculator.prototype.handleOperation = function (operation) {
 };
 
 Calculator.prototype.evaluateExpression = function (expr) {
-  const originalExpr = expr; // Store the original expression
-  // Add this line to replace × with × before processing
+  const originalExpr = expr;
+  // replace × with × before processing
   expr = expr.replace(/×/g, '*');
-  
+
   expr = this.processNestedOperations(expr);
 
   expr = expr
@@ -296,7 +295,7 @@ Calculator.prototype.evaluateExpression = function (expr) {
   if (!Number.isFinite(result)) {
     throw new Error("Invalid result or division by zero");
   }
-  this.addToHistory(originalExpr, MathUtils.formatNumber(result)); // Use the original expression
+  this.addToHistory(originalExpr, MathUtils.formatNumber(result));
   return result;
 };
 
@@ -304,7 +303,7 @@ Calculator.prototype.processNestedOperations = function (expr) {
   const patterns = {
     trig: /(sin|cos|tan)\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
     log: /(log|ln)\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
-    factorial: /(\d+|\([^()]+\))!/g,  // Updated to match numbers or expressions in parentheses
+    factorial: /(\d+|\([^()]+\))!/g,
     power: /pow10\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
     modulo: /(\d+\.?\d×|\))%(\d+\.?\d×)/g,
     sqrt: /sqrt\(([^()]×(?:\([^()]×\)[^()]×)×)\)/g,
@@ -374,10 +373,4 @@ Calculator.prototype.evaluate = function () {
     console.error("Evaluation error:", error);
     this.displayValue = "Invalid Operation";
   }
-};
-
-Calculator.prototype.compute = function () {
-  // Replace × with * for evaluation
-  const expression = this.displayValue.replace(/×/g, '*');
-  // ...rest of compute logic...
 };
