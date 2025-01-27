@@ -211,7 +211,7 @@ body.dark-mode .history {
 
 .history-toggle {
   position: absolute;
-  top: 1rem;
+  top: 0.5rem;
   right: 1.5rem;
   cursor: pointer;
   font-size: 1.5rem;
@@ -239,7 +239,7 @@ body.dark-mode .history {
 
 .history-list {
   overflow-y: auto;
-  max-height: calc(100% - 80px);
+  height: 500px;
 }
 
 .history-item {
@@ -247,31 +247,31 @@ body.dark-mode .history {
   border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.history-item:hover {
-  background: #f8f9fa;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .history-expression {
   color: #666;
   font-size: 0.9rem;
   margin-bottom: 0.3rem;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .history-result {
   color: #333;
   font-size: 1.2rem;
   font-weight: 500;
+  overflow-wrap: break-word;
 }
-
 
 .clear-history {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 0rem;
   background: #f1f3f4;
   border: none;
-  padding: 0.5rem;
+  padding: 0rem;
   border-radius: 8px;
   color: #333;
   font-weight: 500;
@@ -382,6 +382,19 @@ body.dark-mode .history-list::-webkit-scrollbar-thumb:horizontal:hover {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .history-item {
+    padding: 0.5rem;
+  }
+
+  .history-expression {
+    font-size: 0.85rem;
+  }
+
+  .history-result {
+    font-size: 1.1rem;
   }
 }
 
