@@ -1,4 +1,8 @@
+/**
+ * Utility class containing mathematical operations and helper functions
+ */
 export const MathUtils = {
+  //  Validates mathematical expressions by checking parentheses balance
   isValidExpression(expr) {
     let count = 0;
     for (let char of expr) {
@@ -9,41 +13,30 @@ export const MathUtils = {
     return count === 0;
   },
 
+  // Checks if a character is a basic arithmetic operator
   isOperator(char) {
     return "+-×/".includes(char);
   },
 
+  // Counts opening and closing parentheses in an expression
   countParentheses(expr) {
     const open = (expr.match(/\(/g) || []).length;
     const close = (expr.match(/\)/g) || []).length;
     return { open, close };
   },
 
+  // Mathematical constants used in calculations
   CONSTANTS: {
     pi: Math.PI,
     eps: Math.E,
   },
 
+  // Formats numbers for display, handling both integers and decimals
   formatNumber(num) {
     return Number.isInteger(num) ? num.toString() : num.toPrecision(3);
   },
 
-  calculateSquareRoot(value) {
-    const num = parseFloat(value);
-    if (isNaN(num)) throw new Error("Invalid number");
-    if (num < 0)
-      throw new Error("Cannot calculate square root of negative number");
-    return Math.sqrt(num);
-  },
-
-  calculateLog(value, isNatural = false) {
-    const num = parseFloat(value);
-    if (isNaN(num)) throw new Error("Invalid number");
-    if (num <= 0)
-      throw new Error("Cannot calculate logarithm of zero or negative number");
-    return isNatural ? Math.log(num) : Math.log10(num);
-  },
-
+  // Calculates factorial of a number
   calculateFactorial(n) {
     const num = parseInt(n);
     if (isNaN(num)) throw new Error("Invalid number");
@@ -59,12 +52,7 @@ export const MathUtils = {
     return result;
   },
 
-  calculateSquare(value) {
-    const num = parseFloat(value);
-    if (isNaN(num)) throw new Error("Invalid number");
-    return num * num;
-  },
-
+  // Calculates modulo operation between two numbers
   calculateModulo(a, b) {
     const num1 = parseFloat(a);
     const num2 = parseFloat(b);
@@ -73,6 +61,7 @@ export const MathUtils = {
     return num1 % num2;
   },
 
+  // Calculates 10 raised to a power
   calculatePowerOf10(exponent) {
     const num = parseFloat(exponent);
     if (isNaN(num)) throw new Error("Invalid exponent");
@@ -80,6 +69,7 @@ export const MathUtils = {
     return Math.pow(10, num);
   },
 
+  // Calculates trigonometric functions (sin, cos, tan)
   calculateTrig(operation, value) {
     const num = parseFloat(value);
     if (isNaN(num)) throw new Error("Invalid number");

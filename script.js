@@ -1,6 +1,11 @@
 import { Calculator } from "./js/Calculator.js";
 
+/**
+ * Main application initialization function.
+ * Sets up event listeners, theme handling, and calculator functionality.
+ */
 function initializeApp() {
+  // Handles theme switching between light and dark modes
   function setTheme(isDarkMode) {
     const icon = document.querySelector(".theme-toggle i");
     if (isDarkMode) {
@@ -27,12 +32,14 @@ function initializeApp() {
 
   const calculator = new Calculator(document.getElementById("calcInput"));
 
+  // Angle mode toggle (Degrees/Radians)
   const angleModeElement = document.getElementById("angleMode");
   angleModeElement.addEventListener("click", function () {
     calculator.isDegreeMode = !calculator.isDegreeMode;
     this.textContent = calculator.isDegreeMode ? "DEG" : "RAD";
   });
 
+  // Global button click handler for numbers and operations
   document.querySelectorAll("button").forEach((button) => {
     button.addEventListener("click", (e) => {
       e.preventDefault();
@@ -44,15 +51,19 @@ function initializeApp() {
       } else if (operation !== null) {
         calculator.handleOperation(operation);
       }
+
+      // to prevent the button from staying focused after click
       button.blur();
     });
   });
 
+  // Theme toggle handler
   document.querySelector(".theme-toggle").addEventListener("click", function () {
     const isDarkMode = !document.body.classList.contains("dark-mode");
     setTheme(isDarkMode);
   });
 
+  // Trigonometry dropdown toggle handler
   document.getElementById("trigToggle").addEventListener("click", function () {
     document.getElementById("trigDropdown").classList.toggle("show");
     document
@@ -60,6 +71,7 @@ function initializeApp() {
       .classList.toggle("rotate-arrow");
   });
 
+  // History panel show handler
   document.querySelector('.history-toggle').addEventListener('click', function (e) {
     const historyPanel = document.querySelector('.history-panel');
     historyPanel.classList.add('show');
@@ -67,11 +79,13 @@ function initializeApp() {
     calculator.renderHistory(document.querySelector('.history-list'));
   });
 
+  // History clear handler
   document.querySelector('.clear-history').addEventListener('click', function (e) {
     e.stopPropagation();
     calculator.clearHistory();
   });
 
+  // History item selection handler
   document.querySelector('.history-list').addEventListener('click', function (e) {
     e.stopPropagation();
     const historyItem = e.target.closest('.history-item');
@@ -81,11 +95,12 @@ function initializeApp() {
     }
   });
 
+  // History panel close handler
   document.querySelector('.history-close').addEventListener('click', function () {
     document.querySelector('.history-panel').classList.remove('show');
     document.querySelector('.history-toggle').style.display = 'block';
   });
 }
 
-// Wait for DOM to be ready
+// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeApp);

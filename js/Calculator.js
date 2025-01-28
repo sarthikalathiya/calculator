@@ -1,6 +1,14 @@
 import { MathUtils } from "./utils.js";
 
+/**
+ * Calculator class that handles all calculator operations and display logic
+ * Supports basic arithmetic, trigonometry, logarithms, and other mathematical functions
+ */
 export class Calculator {
+  /**
+   * Initialize calculator with display element and sets up event listeners
+   * @param {HTMLElement} displayElement - The input element that shows calculator input/output
+   */
   constructor(displayElement) {
     this.displayValue = "";
     this.displayElement = displayElement;
@@ -38,12 +46,12 @@ export class Calculator {
   initializeDisplay() {
     this.updateDisplay();
   }
-
   initializeHistory() {
     const historyList = document.querySelector('.history-list');
     this.renderHistory(historyList);
   }
 
+  // Adds a new calculation to history and updates localStorage
   addToHistory(expression, result) {
     this.history.unshift({ expression, result, timestamp: Date.now() });
     if (this.history.length > 1024) this.history.pop();
@@ -55,6 +63,7 @@ export class Calculator {
     }
   }
 
+  // Renders the calculation history in the history panel
   renderHistory(historyList) {
     if (!historyList) return;
 
@@ -76,6 +85,7 @@ export class Calculator {
       .join('');
   }
 
+  // Clears all calculation history from localStorage and UI
   clearHistory() {
     this.history = [];
     localStorage.removeItem('calculatorHistory');
@@ -83,6 +93,7 @@ export class Calculator {
   }
 }
 
+// Updates the calculator display with current value
 Calculator.prototype.updateDisplay = function () {
   if (this.displayElement) {
     this.displayElement.value = this.displayValue;
@@ -90,6 +101,8 @@ Calculator.prototype.updateDisplay = function () {
   }
 };
 
+// Toggles the sign (positive/negative) of the last number in the expression
+// Handles complex cases including operators and parentheses
 Calculator.prototype.toggleSign = function () {
   if (!this.displayValue) return;
 
@@ -120,15 +133,17 @@ Calculator.prototype.toggleSign = function () {
   this.updateDisplay();
 };
 
+// Appends a number or decimal point to the current expression
+// Includes validation for decimal points and handling of special cases
 Calculator.prototype.appendNumber = function (number) {
   if (number === "Plus/Minus") {
     this.toggleSign();
     return;
   }
 
-  // Check for constants
+  // Prevent adding numbers directly after constants
   if (this.displayValue.endsWith('PI') || this.displayValue.endsWith('EPS')) {
-    return; // Prevent adding numbers directly after constants
+    return;
   }
 
   if (number === ".") {
@@ -144,6 +159,8 @@ Calculator.prototype.appendNumber = function (number) {
   this.updateDisplay();
 };
 
+// Handles all calculator operations including arithmetic, functions, and special operations
+// Core method for processing user inputs and maintaining expression state
 Calculator.prototype.handleOperation = function (operation) {
   try {
     switch (operation) {
@@ -174,6 +191,7 @@ Calculator.prototype.handleOperation = function (operation) {
       case "-":
       case "/":
         if (!this.displayValue) return;
+        // Replace the last operator if there are multiple operators in a row
         if (MathUtils.isOperator(this.displayValue.slice(-1))) {
           this.displayValue = this.displayValue.slice(0, -1);
         }
@@ -240,16 +258,6 @@ Calculator.prototype.handleOperation = function (operation) {
         }
         this.displayValue += operation + "(";
         break;
-      case "eval":
-        if (!this.displayValue) return;
-        try {
-          const result = this.evaluateExpression(this.displayValue);
-          this.displayValue = MathUtils.formatNumber(result);
-        } catch (error) {
-          console.error("Evaluation error:", error);
-          this.displayValue = "Invalid Operation";
-        }
-        break;
       case "pi":
       case "eps":
         const constant = MathUtils.CONSTANTS[operation];
@@ -272,6 +280,16 @@ Calculator.prototype.handleOperation = function (operation) {
         }
         this.displayValue += "sqrt(";
         break;
+      case "eval":
+        if (!this.displayValue) return;
+        try {
+          const result = this.evaluateExpression(this.displayValue);
+          this.displayValue = MathUtils.formatNumber(result);
+        } catch (error) {
+          console.error("Evaluation error:", error);
+          this.displayValue = "Invalid Operation";
+        }
+        break;
     }
   } catch (error) {
     console.error("Operation error:", error);
@@ -280,9 +298,11 @@ Calculator.prototype.handleOperation = function (operation) {
   this.updateDisplay();
 };
 
+// Evaluates the mathematical expression and returns the result
+// Handles complex expressions with nested operations and functions
 Calculator.prototype.evaluateExpression = function (expr) {
   const originalExpr = expr;
-  // replace × with × before processing
+  // replace × with * before processing
   expr = expr.replace(/×/g, '*');
 
   expr = this.processNestedOperations(expr);
@@ -300,10 +320,15 @@ Calculator.prototype.evaluateExpression = function (expr) {
   if (!Number.isFinite(result)) {
     throw new Error("Invalid result or division by zero");
   }
-  this.addToHistory(originalExpr, MathUtils.formatNumber(result));
+
+  // Add to history only if the expression is not a simple number
+  if (!/^\d+$/.test(originalExpr)) {
+    this.addToHistory(originalExpr, MathUtils.formatNumber(result));
+  }
   return result;
 };
 
+// Processes nested mathematical operations in the expression
 Calculator.prototype.processNestedOperations = function (expr) {
   const patterns = {
     trig: /(sin|cos|tan)\(([^()]+)\)/g,
@@ -354,28 +379,4 @@ Calculator.prototype.processNestedOperations = function (expr) {
   } while (expr !== prevExpr);
 
   return expr;
-};
-
-Calculator.prototype.evaluate = function () {
-  if (!this.displayValue) return;
-
-  try {
-    if (!MathUtils.isValidExpression(this.displayValue)) {
-      throw new Error("Invalid expression");
-    }
-    const result = Function("return " + this.displayValue)();
-    if (result === Infinity || result === -Infinity) {
-      throw new Error("Division by zero");
-    }
-    if (Number.isNaN(result)) {
-      throw new Error("Invalid operation");
-    }
-    if (!Number.isFinite(result)) {
-      throw new Error("Invalid result");
-    }
-    this.displayValue = String(result);
-  } catch (error) {
-    console.error("Evaluation error:", error);
-    this.displayValue = "Invalid Operation";
-  }
 };
